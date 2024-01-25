@@ -35,22 +35,8 @@ class DevConfig(BaseConfig):
 
     SECRET_KEY = "very12312secret!key"
 
-    LOGGING_CONFIG = {
-        "version": 1,
-        "formatters": {
-            "default": {
-                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
-            }
-        },
-        "handlers": {
-            "wsgi": {
-                "class": "logging.StreamHandler",
-                "stream": "ext://flask.logging.wsgi_errors_stream",
-                "formatter": "default",
-            }
-        },
-        "root": {"level": "DEBUG", "handlers": ["wsgi"]},
-    }
+    LOGGING_CONFIG = dict(BaseConfig.LOGGING_CONFIG)  # Copy of parent config setting
+    LOGGING_CONFIG["root"] = {"level": "DEBUG", "handlers": ["wsgi"]}
 
 
 class TestConfig(DevConfig):

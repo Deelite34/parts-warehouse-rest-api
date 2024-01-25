@@ -35,6 +35,8 @@ def create_app():
 
     if config is DevConfig:
         me.connect("warehouse")
-        flask_app.logger.info("Connected to local development Mongo database.")
+        flask_app.logger.debug(
+            "Connected to local development 'warehouse' Mongo database."
+        )
 
     return flask_app
