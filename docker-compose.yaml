@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  flask:
+    build: 
+      context: .
+      dockerfile: ./compose/Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./:/app
+    env_file:
+      - ./config/.env
+    stdin_open: true  # For PDB debugging
+    tty: true         # For PDB debugging
+    restart: on-failure
+
+  
