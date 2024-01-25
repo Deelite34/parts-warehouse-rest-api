@@ -1,11 +1,12 @@
 import os
 from flask import Flask
 
-from config.settings import config_by_name
+from config.settings import DevConfig, config_by_name
 from manage import run_pytest
 from blueprints import api_bp
 from extensions import api
 import mongoengine as me
+from logging.config import dictConfig
 
 
 def register_blueprints(app: Flask):
@@ -26,9 +27,14 @@ def create_app():
     config = config_by_name[os.environ["MODE"]]
     flask_app.config.from_object(config)
 
+    dictConfig(flask_app.config["LOGGING_CONFIG"])
+
     register_blueprints(flask_app)
     init_extensions(flask_app)
     add_commands(flask_app)
 
-    me.connect("warehouse")
+    if config is DevConfig:
+        me.connect("warehouse")
+        flask_app.logger.info("Connected to local development Mongo database.")
+
     return flask_app

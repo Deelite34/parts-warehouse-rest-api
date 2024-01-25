@@ -6,17 +6,51 @@ class BaseConfig:
     API_VERSION = "v1"
     OPENAPI_VERSION = "3.0.2"
 
+    LOGGING_CONFIG = {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "wsgi": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://flask.logging.wsgi_errors_stream",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "INFO", "handlers": ["wsgi"]},
+    }
+
 
 class ProdConfig(BaseConfig):
     SECRET_KEY = os.getenv("secret_key")
+    CONNECTION_STRING = f"mongodb+srv://{os.getenv("MONGODB_USERNAME")}:{os.getenv("MONGODB_PASSWORD")}@{os.getenv("MONGODB_CLUSTER")}"
 
 
 class DevConfig(BaseConfig):
     DEBUG = True
     TESTING = True
 
-    # MONGO_URI = f"mongodb://{os.getenv("MONGODB_USERNAME")}@:27017/{os.getenv("MONGODB_DATABASE")}"
     SECRET_KEY = "very12312secret!key"
+
+    LOGGING_CONFIG = {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "wsgi": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://flask.logging.wsgi_errors_stream",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "DEBUG", "handlers": ["wsgi"]},
+    }
 
 
 class TestConfig(DevConfig):
