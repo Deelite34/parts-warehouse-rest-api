@@ -3,7 +3,7 @@ from flask import Flask
 
 from config.settings import DevConfig, config_by_name
 from manage import run_pytest
-from blueprints import api_bp
+from api.routes import api_bp
 from extensions import api
 import mongoengine as me
 from logging.config import dictConfig
@@ -34,7 +34,7 @@ def create_app():
     add_commands(flask_app)
 
     if config is DevConfig:
-        me.connect("warehouse")
+        me.connect("warehouse", host=flask_app.config["MONGODB_HOST"])
         flask_app.logger.debug(
             "Connected to local development 'warehouse' Mongo database."
         )

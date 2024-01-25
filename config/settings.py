@@ -34,6 +34,7 @@ class DevConfig(BaseConfig):
     TESTING = True
 
     SECRET_KEY = "very12312secret!key"
+    MONGODB_HOST = "mongodb://mongodb/dev"
 
     LOGGING_CONFIG = dict(BaseConfig.LOGGING_CONFIG)  # Copy of parent config setting
     LOGGING_CONFIG["root"] = {"level": "DEBUG", "handlers": ["wsgi"]}
