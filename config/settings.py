@@ -15,11 +15,12 @@ class DevConfig(BaseConfig):
     DEBUG = True
     TESTING = True
 
+    # MONGO_URI = f"mongodb://{os.getenv("MONGODB_USERNAME")}@:27017/{os.getenv("MONGODB_DATABASE")}"
     SECRET_KEY = "very12312secret!key"
 
 
-class TestConfig(BaseConfig):
-    """use only when creating flask object in tests"""
+class TestConfig(DevConfig):
+    """use only when creating flask app object in tests"""
 
     DEBUG = True
     TESTING = True
