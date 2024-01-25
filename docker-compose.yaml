@@ -23,7 +23,7 @@ services:
     image: mongo:6.0.13-jammy
     restart: always
     ports:
-      - 8081:8081
+      - 27017:27017
     command: mongod
     volumes:
       - mongodbdata:/data/db
