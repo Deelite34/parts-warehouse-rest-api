@@ -1,17 +1,21 @@
-from marshmallow import Schema, fields, post_dump
+from marshmallow import INCLUDE, Schema, fields, post_dump
 
 
 class KeepUnknownsSchema(Schema):
+    class Meta:
+        # This keeps unknown fields through schema.load(), but not schema.dump()
+        unknown = INCLUDE
+
     @post_dump(pass_original=True)
     def keep_unknowns(self, output, orig, **kwargs):
         """
-        Workaround that will allow us to keep unknown values through dumping the schema,
-        which seems unaffected by unknown = INCLUDE meta parameter.
+        Workaround that will allow us to keep unknown values through schema.dump()
         https://github.com/marshmallow-code/marshmallow/issues/1545#issuecomment-1051943440
         """
         for key in orig:
             if key not in output:
                 output[key] = orig[key]
+        output.pop("_cls")
         return output
 
 

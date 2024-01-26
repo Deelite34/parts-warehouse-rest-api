@@ -19,3 +19,17 @@ class QuerySetExtended(QuerySet):
                     {"code": code, "status": "Bad Request", "details": str(e)}, code
                 )
             )
+
+    def get_or_none(self, *args, **kwargs):
+        """Get single item - use when need there's need for custom action if searched entity does not exist"""
+        try:
+            return self.get(*args, **kwargs)
+        except DoesNotExist:
+            return None
+        except ValidationError as e:
+            code = 400
+            abort(
+                make_response(
+                    {"code": code, "status": "Bad Request", "details": str(e)}, code
+                )
+            )
