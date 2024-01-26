@@ -2,11 +2,11 @@ import os
 from flask import Flask
 
 from config.settings import DevConfig, config_by_name
-from manage import run_pytest
 from api.routes import api_bp
 from extensions import api
 import mongoengine as me
 from logging.config import dictConfig
+from manage import create_data
 
 
 def register_blueprints(app: Flask):
@@ -19,7 +19,7 @@ def init_extensions(app: Flask):
 
 
 def add_commands(app: Flask):
-    app.cli.add_command(run_pytest)
+    app.cli.add_command(create_data)
 
 
 def create_app():

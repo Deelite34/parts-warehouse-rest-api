@@ -10,3 +10,9 @@ bash:
 
 shell:
 	docker compose exec flask flask shell
+
+mbash:
+	docker compose exec mongodb bash
+
+msh:
+	docker compose exec mongodb mongosh

@@ -17,8 +17,16 @@ class KeepUnknownsSchema(Schema):
         for key in orig:
             if key not in output:
                 output[key] = orig[key]
-        output.pop("_cls")
         return output
+
+
+class NestedLocationSchema(KeepUnknownsSchema):
+    room = fields.String(required=True, allow_blank=True)
+    bookcase = fields.String(required=True, allow_blank=True)
+    shelf = fields.String(required=True, allow_blank=True)
+    cuvette = fields.String(required=True, allow_blank=True)
+    column = fields.String(required=True, allow_blank=True)
+    row = fields.String(required=True, allow_blank=True)
 
 
 class PartSchema(KeepUnknownsSchema):
@@ -28,7 +36,7 @@ class PartSchema(KeepUnknownsSchema):
     category = fields.String(required=True)
     quantity = fields.Integer(required=True)
     price = fields.Float(required=True)
-    location = fields.Dict(required=True)
+    location = fields.Nested(NestedLocationSchema, required=True)
 
     @validates("category")
     def category_is_not_base_category(self, value):

@@ -2,6 +2,8 @@ apispec==6.4.0
 blinker==1.7.0
 click==8.1.7
 dnspython==2.5.0
+Faker==22.5.1
+faker-commerce==1.0.3
 Flask==3.0.1
 flask-smorest==0.42.3
 iniconfig==2.0.0
@@ -14,6 +16,8 @@ packaging==23.2
 pluggy==1.4.0
 pymongo==4.6.1
 pytest==7.4.4
+python-dateutil==2.8.2
 ruff==0.1.14
+six==1.16.0
 webargs==8.4.0
 Werkzeug==3.0.1

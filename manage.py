@@ -1,20 +1,11 @@
-import logging
-
 import click
-import pytest
+
 from flask.cli import with_appcontext
+from utils import generate_sample_data
 
-logging.getLogger("faker").setLevel(logging.INFO)
 
-
-@click.command("test")
+@click.command("generate_data")
 @with_appcontext
-def run_pytest():
-    pytest.main(["-s", "tests"])
-
-
-@click.command("test")
-@with_appcontext
-def generate_initial_data():
-    """Generate initial set of data"""
-    ...
+def create_data():
+    """Generate set of data consisting of 5 categories and 10 parts using them"""
+    generate_sample_data()

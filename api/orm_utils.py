@@ -5,7 +5,7 @@ from mongoengine.queryset import QuerySet
 
 from mongoengine import DynamicDocument
 
-from api.utils import detailed_abort
+from utils import detailed_abort
 
 
 class QuerySetExtended(QuerySet):
@@ -87,8 +87,8 @@ class QuerySetCategoryExtended(QuerySetExtended):
 
 
 class DynamicDocumentWithUtils(DynamicDocument):
-    meta = {"allow_inheritance": True, "queryset_class": QuerySetExtended}
+    meta = {"abstract": True, "queryset_class": QuerySetExtended}
 
 
 class DynamicDocumentCategory(DynamicDocument):
-    meta = {"allow_inheritance": True, "queryset_class": QuerySetCategoryExtended}
+    meta = {"abstract": True, "queryset_class": QuerySetCategoryExtended}
