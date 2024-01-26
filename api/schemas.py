@@ -1,4 +1,6 @@
-from marshmallow import INCLUDE, Schema, fields, post_dump
+from marshmallow import INCLUDE, Schema, fields, post_dump, ValidationError, validates
+
+from api.models import Category
 
 
 class KeepUnknownsSchema(Schema):
@@ -27,6 +29,14 @@ class PartSchema(KeepUnknownsSchema):
     quantity = fields.Integer(required=True)
     price = fields.Float(required=True)
     location = fields.Dict(required=True)
+
+    @validates("category")
+    def category_is_not_base_category(self, value):
+        category = Category.objects.get_or_none(name=value)
+        if not category:
+            raise ValidationError(f"Category {value} does not exist.")
+        if category.parent_name == "":
+            raise ValidationError("Category must not be a base category. Choose category that has non blank parent_name field.")
 
 
 class CategorySchema(KeepUnknownsSchema):
