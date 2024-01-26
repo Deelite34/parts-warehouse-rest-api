@@ -1,10 +1,6 @@
-from mongoengine import StringField, FloatField, DictField, DynamicDocument, IntField
+from mongoengine import StringField, FloatField, DictField, IntField
 
-from queryset import QuerySetExtended
-
-
-class DynamicDocumentWithUtils(DynamicDocument):
-    meta = {"allow_inheritance": True, "queryset_class": QuerySetExtended}
+from .orm_utils import DynamicDocumentCategory, DynamicDocumentWithUtils
 
 
 class Part(DynamicDocumentWithUtils):
@@ -17,6 +13,6 @@ class Part(DynamicDocumentWithUtils):
     location = DictField(required=True)
 
 
-class Category(DynamicDocumentWithUtils):
+class Category(DynamicDocumentCategory):
     name = StringField(required=True)
     parent_name = StringField(required=True)

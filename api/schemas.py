@@ -36,7 +36,9 @@ class PartSchema(KeepUnknownsSchema):
         if not category:
             raise ValidationError(f"Category {value} does not exist.")
         if category.parent_name == "":
-            raise ValidationError("Category must not be a base category. Choose category that has non blank parent_name field.")
+            raise ValidationError(
+                "Category must not be a base category. Choose category that has non blank parent_name field."
+            )
 
 
 class CategorySchema(KeepUnknownsSchema):

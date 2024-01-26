@@ -9,4 +9,4 @@ bash:
 	docker compose exec flask bash
 
 shell:
-	docker compose exec flask shell
+	docker compose exec flask flask shell
