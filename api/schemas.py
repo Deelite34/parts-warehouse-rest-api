@@ -67,6 +67,31 @@ class PartSchema(KeepUnknownsSchema):
             )
 
 
+class PartSearchSchema(KeepUnknownsSchema):
+    id = fields.String()
+    serial_number = fields.String()
+    name = fields.String()
+    description = fields.String()
+    category = fields.String()
+    quantity = fields.Integer(
+        validate=Range(min_inclusive=1, error="Quantity must be greater than 0"),
+    )
+    price = fields.Float(
+        validate=Range(min_inclusive=0.01, error="Price must be greater or equal 0.01"),
+    )
+
+    location = fields.Nested(
+        NestedLocationSchema
+    )  # Unused, but needed to be made not required
+
+    room = fields.String()
+    bookcase = fields.String()
+    shelf = fields.String()
+    cuvette = fields.String()
+    column = fields.String()
+    row = fields.String()
+
+
 class CategorySchema(KeepUnknownsSchema):
     name = fields.String(required=True, unique=True)
     parent_name = fields.String(required=True, allow_blank=True)

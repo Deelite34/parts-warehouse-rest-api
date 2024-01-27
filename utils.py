@@ -16,16 +16,25 @@ def detailed_abort(code, details: str | Exception) -> None:
     )
 
 
-def generate_sample_data(num_of_categories=5, num_of_parts=10):
+def generate_sample_data(
+    num_of_categories=3, num_of_parts=6, base_category_name="base"
+):
     from api.models import Category, Part
 
-    categories_to_be_created = [
-        Category(name="base", parent_name=""),
-    ]
+    categories_to_be_created = []
+
+    base_exists = Category.objects.get_or_none(name=base_category_name)
+    if not base_exists:
+        categories_to_be_created.append(
+            Category(name=base_category_name, parent_name="")
+        )
+
     parts_to_be_created = []
 
     for _ in range(num_of_categories):
-        category = Category(name=fake.word(), parent_name="base")
+        category = Category(
+            name=fake.word() + str(random.uniform(1, 10000000)), parent_name="base"
+        )
         categories_to_be_created.append(category)
 
     for _ in range(num_of_parts):
@@ -35,16 +44,16 @@ def generate_sample_data(num_of_categories=5, num_of_parts=10):
             description=fake.paragraph(nb_sentences=2),
             category=categories_to_be_created[
                 fake.random_digit() % len(categories_to_be_created)
-            ].name,
+            ].name,  # Assigned to random category created above
             quantity=random.randrange(300),
             price=round(random.uniform(1, 10000), 2),
             location={
-                "room": random.randrange(30),
-                "bookcase": random.randrange(100),
+                "room": random.randrange(1, 30),
+                "bookcase": random.randrange(1, 100),
                 "shelf": fake.bothify(text="??-##"),
-                "cuvette": random.randrange(30),
-                "column": random.randrange(50),
-                "row": random.randrange(20),
+                "cuvette": random.randrange(1, 30),
+                "column": random.randrange(1, 50),
+                "row": random.randrange(1, 20),
             },
         )
         parts_to_be_created.append(part)

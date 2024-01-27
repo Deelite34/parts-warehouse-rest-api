@@ -11,12 +11,12 @@ from .orm_utils import DynamicDocumentCategory, DynamicDocumentWithUtils
 
 
 class LocationDocument(EmbeddedDocument):
-    room = StringField(default="")
-    bookcase = StringField(default="")
-    shelf = StringField(default="")
-    cuvette = StringField(default="")
-    column = StringField(default="")
-    row = StringField(default="")
+    room = StringField(default="", min_value=1)
+    bookcase = StringField(default="", min_value=1)
+    shelf = StringField(default="", min_value=1)
+    cuvette = StringField(default="", min_value=1)
+    column = StringField(default="", min_value=1)
+    row = StringField(default="", min_value=1)
 
 
 class Part(DynamicDocumentWithUtils):
@@ -27,11 +27,7 @@ class Part(DynamicDocumentWithUtils):
     description = StringField(required=True)
     category = StringField(required=True)
     quantity = IntField(required=True, min_value=1)
-    # Maybe it should be considered, to consider additional warning in request response
-    # if the price gets rounded
-    price = FloatField(
-        required=True, min_value=0.01, rounding=decimal.ROUND_UP
-    )  # if rounding happens, company earns additional +-0.01 instead of losing +-0.01 per item
+    price = FloatField(required=True, min_value=0.01, rounding=decimal.ROUND_UP)
     location = EmbeddedDocumentField(LocationDocument, required=True)
 
 

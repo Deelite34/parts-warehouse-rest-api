@@ -1,11 +1,15 @@
+from ast import Dict
 import json
 from flask_smorest import Blueprint
 from flask.views import MethodView
+from marshmallow import INCLUDE
 
-from api.schemas import CategorySchema, PartSchema
+from api.schemas import CategorySchema, PartSchema, PartSearchSchema
 from api.models import Category, Part
+from utils import detailed_abort
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1/")
+optional_part_schema = PartSchema(partial=True, unknown=INCLUDE)
 
 
 @api_bp.route("/parts/")
@@ -45,6 +49,57 @@ class PartsById(MethodView):
     def delete(self, part_id):
         part = Part.objects.get_or_404(id=part_id)
         part.delete()
+
+
+@api_bp.route("/parts/search/")
+class PartSearch(MethodView):
+    @api_bp.arguments(PartSearchSchema, location="query")
+    @api_bp.response(200, PartSearchSchema(many=True))
+    def get(self, args):
+        if not args:
+            return detailed_abort(409, "Missing any field to search by.")
+
+        updated_args = PartSearch.flatten_part_dict(args)
+
+        parts = Part.objects(**updated_args)
+        return json.loads(parts.to_json())
+
+    @staticmethod
+    def flatten_part_dict(part: Dict) -> Dict:
+        """
+        Flattens Part dictionary containing embedded location dict and converts location keys structure.
+        As result, Part dictionary can be unpacked, and Part can be searched by location fields.
+        Example:
+        Part dict contains embedded dict {"shelf": 5}. Calling this func gives us flattened Part dict:
+        {
+        ...,
+        'location__shelf': 5,
+        }
+        """
+
+        embedded_location_fields = [
+            "room",
+            "bookcase",
+            "shelf",
+            "cuvette",
+            "column",
+            "row",
+        ]
+
+        if any([_ in part.keys() for _ in embedded_location_fields]):
+            updated_args = dict(part)
+            for key in part:
+                # rename location specific keys to use "location__" prefix
+                if key in embedded_location_fields:
+                    try:  # attempt to convert possible number in str format, of shelf, row etc. to int
+                        field = int(updated_args[key])
+                    except ValueError:
+                        field = updated_args[key]
+                    finally:
+                        updated_args.pop(key)
+                    updated_args[f"location__{key}"] = field
+            return updated_args
+        return part
 
 
 @api_bp.route("/categories/")
