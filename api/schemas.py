@@ -1,7 +1,7 @@
 from marshmallow import INCLUDE, Schema, fields, post_dump, ValidationError, validates
 
 from api.models import Category, Part
-
+from marshmallow.validate import Range
 
 class KeepUnknownsSchema(Schema):
     class Meta:
@@ -34,8 +34,8 @@ class PartSchema(KeepUnknownsSchema):
     name = fields.String(required=True)
     description = fields.String(required=True)
     category = fields.String(required=True)
-    quantity = fields.Integer(required=True)
-    price = fields.Float(required=True)
+    quantity = fields.Integer(required=True, validate=Range(min_inclusive=1, error="Quantity must be greater than 0")))
+    price = fields.Float(required=True, validate=Range(min_inclusive=0.01, error="Price must be greater or equal 0.01")))
     location = fields.Nested(NestedLocationSchema, required=True)
 
     @validates("serial_number")

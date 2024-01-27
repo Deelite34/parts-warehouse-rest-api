@@ -1,3 +1,4 @@
+import decimal
 from mongoengine import (
     StringField,
     FloatField,
@@ -25,8 +26,12 @@ class Part(DynamicDocumentWithUtils):
     name = StringField(required=True)
     description = StringField(required=True)
     category = StringField(required=True)
-    quantity = IntField(required=True)
-    price = FloatField(required=True)
+    quantity = IntField(required=True, min_value=1)
+    # Maybe it should be considered, to consider additional warning in request response
+    # if the price gets rounded
+    price = FloatField(
+        required=True, min_value=0.01, rounding=decimal.ROUND_UP
+    )  # if rounding happens, company earns additional +-0.01 instead of losing +-0.01 per item
     location = EmbeddedDocumentField(LocationDocument, required=True)
 
 
