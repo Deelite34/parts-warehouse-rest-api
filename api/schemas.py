@@ -1,6 +1,6 @@
 from marshmallow import INCLUDE, Schema, fields, post_dump, ValidationError, validates
 
-from api.models import Category
+from api.models import Category, Part
 
 
 class KeepUnknownsSchema(Schema):
@@ -30,7 +30,7 @@ class NestedLocationSchema(KeepUnknownsSchema):
 
 
 class PartSchema(KeepUnknownsSchema):
-    serial_number = fields.String(required=True)
+    serial_number = fields.String(required=True, unique=True)
     name = fields.String(required=True)
     description = fields.String(required=True)
     category = fields.String(required=True)
@@ -38,8 +38,19 @@ class PartSchema(KeepUnknownsSchema):
     price = fields.Float(required=True)
     location = fields.Nested(NestedLocationSchema, required=True)
 
+    @validates("serial_number")
+    def serial_number_is_unique(self, value):
+        """Gives structured json response with details if this validation fails"""
+        field_name = "serial_number"
+        serial_number_already_used = Part.objects.get_or_none(serial_number=value)
+        if serial_number_already_used:
+            raise ValidationError(
+                f"Value '{value}' of unique field {field_name} is already in use."
+            )
+
     @validates("category")
     def category_is_not_base_category(self, value):
+        """Gives structured json response with details if this validation fails"""
         category = Category.objects.get_or_none(name=value)
         if not category:
             raise ValidationError(f"Category {value} does not exist.")
@@ -50,5 +61,15 @@ class PartSchema(KeepUnknownsSchema):
 
 
 class CategorySchema(KeepUnknownsSchema):
-    name = fields.String(required=True)
+    name = fields.String(required=True, unique=True)
     parent_name = fields.String(required=True, allow_blank=True)
+
+    @validates("name")
+    def category_name_is_unique(self, value):
+        """Gives structured json response with details if this validation fails"""
+        field_name = "name"
+        name_already_used = Category.objects.get_or_none(name=value)
+        if name_already_used:
+            raise ValidationError(
+                f"Value '{value}' of unique field {field_name} is already in use."
+            )

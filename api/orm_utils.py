@@ -18,8 +18,7 @@ class QuerySetExtended(QuerySet):
         except DoesNotExist:
             abort(404)
         except ValidationError as e:
-            code = 400
-            detailed_abort(code, e)
+            detailed_abort(400, e)
 
     def get_or_none(self, *args, **kwargs):
         """Get single item - use when need there's need for custom action if searched entity does not exist"""
@@ -28,8 +27,7 @@ class QuerySetExtended(QuerySet):
         except DoesNotExist:
             return None
         except ValidationError as e:
-            code = 400
-            detailed_abort(code, e)
+            detailed_abort(400, e)
 
 
 class QuerySetCategoryExtended(QuerySetExtended):

@@ -21,7 +21,7 @@ class LocationDocument(EmbeddedDocument):
 class Part(DynamicDocumentWithUtils):
     meta = {"collection": "parts"}
 
-    serial_number = StringField(required=True)
+    serial_number = StringField(required=True, unique=True)
     name = StringField(required=True)
     description = StringField(required=True)
     category = StringField(required=True)
@@ -33,5 +33,5 @@ class Part(DynamicDocumentWithUtils):
 class Category(DynamicDocumentCategory):
     meta = {"collection": "categories"}
 
-    name = StringField(required=True)
+    name = StringField(required=True, unique=True)
     parent_name = StringField(required=True)
