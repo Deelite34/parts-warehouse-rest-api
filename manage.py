@@ -1,6 +1,8 @@
 import click
 
 from flask.cli import with_appcontext
+import pytest
+from api.models import Category, Part
 from utils import generate_sample_data
 
 
@@ -9,3 +11,9 @@ from utils import generate_sample_data
 def create_data():
     """Generate set of data consisting of 5 categories and 10 parts using them"""
     generate_sample_data()
+
+
+@click.command("test")
+@with_appcontext
+def run_pytest():
+    pytest.main(["-s", "tests"])

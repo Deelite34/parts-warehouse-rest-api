@@ -32,13 +32,17 @@ class QuerySetExtended(QuerySet):
 
 class QuerySetCategoryExtended(QuerySetExtended):
     def delete(self, *args, **kwargs):
-        """Extra conditions before allowing deletion of category"""
-        self_data_dict = json.loads(self.to_json())[0]
-
-        if error_msg := self.check_any_parts_using_this_category(self_data_dict):
-            detailed_abort(409, error_msg)
-        if error_msg := self.check_child_category_for_parts_using_it(self_data_dict):
-            detailed_abort(409, error_msg)
+        """Checks extra conditions before allowing deletion of category"""
+        try:
+            self_data_dict = json.loads(self.to_json())[0]
+            if error_msg := self.check_any_parts_using_this_category(self_data_dict):
+                detailed_abort(409, error_msg)
+            if error_msg := self.check_child_category_for_parts_using_it(
+                self_data_dict
+            ):
+                detailed_abort(409, error_msg)
+        except IndexError:
+            super().delete(*args, **kwargs)
 
         super().delete(*args, **kwargs)
 

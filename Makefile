@@ -16,3 +16,6 @@ mbash:
 
 msh:
 	docker compose exec mongodb mongosh
+
+test:
+	docker compose exec flask flask test

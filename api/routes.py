@@ -1,12 +1,11 @@
 from ast import Dict
 import json
-from flask_smorest import Blueprint
 from flask.views import MethodView
 from marshmallow import INCLUDE
 
 from api.schemas import CategorySchema, PartSchema, PartSearchSchema
 from api.models import Category, Part
-from utils import detailed_abort
+from flask_smorest import Blueprint
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1/")
 optional_part_schema = PartSchema(partial=True, unknown=INCLUDE)
@@ -54,13 +53,9 @@ class PartsById(MethodView):
 @api_bp.route("/parts/search/")
 class PartSearch(MethodView):
     @api_bp.arguments(PartSearchSchema, location="query")
-    @api_bp.response(200, PartSearchSchema(many=True))
+    @api_bp.response(200, PartSchema(many=True))
     def get(self, args):
-        if not args:
-            return detailed_abort(409, "Missing any field to search by.")
-
         updated_args = PartSearch.flatten_part_dict(args)
-
         parts = Part.objects(**updated_args)
         return json.loads(parts.to_json())
 

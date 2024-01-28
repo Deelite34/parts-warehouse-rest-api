@@ -1,5 +1,4 @@
 from marshmallow import INCLUDE, Schema, fields, post_dump, ValidationError, validates
-
 from api.models import Category, Part
 from marshmallow.validate import Range
 
@@ -79,10 +78,6 @@ class PartSearchSchema(KeepUnknownsSchema):
     price = fields.Float(
         validate=Range(min_inclusive=0.01, error="Price must be greater or equal 0.01"),
     )
-
-    location = fields.Nested(
-        NestedLocationSchema
-    )  # Unused, but needed to be made not required
 
     room = fields.String()
     bookcase = fields.String()
