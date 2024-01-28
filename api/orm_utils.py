@@ -77,7 +77,7 @@ class QuerySetCategoryExtended(QuerySetExtended):
             if part_using_this_category.count() > 0:
                 part = json.loads(part_using_this_category[0].to_json())
                 part_name = part["name"]
-                error_msg = f"Deletion failed - part '{part_name}' is using this category or one of subcategories '{category_name}.'"
+                error_msg = f"Deletion failed - part '{part_name}' is using this category or one of subcategories '{category_name}'."
                 return error_msg
             else:
                 # Check all children of this child category recursively, depth-first

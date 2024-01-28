@@ -203,3 +203,129 @@ def test_category_delete(app, client):
     )
 
     assert response.status_code == 204
+
+
+def test_post_request_validation_part_schema_bad_fields(app, client):
+    expected_detected_wrong_fields = [
+        "category",
+        "description",
+        "location",
+        "name",
+        "serial_number",
+    ]
+
+    response = client.post(
+        url_for("api.Parts"),
+        json={
+            "serial_number": 123,
+            "name": 123,
+            "description": 123,
+            "category": "qwe",
+            "quantity": 0,
+            "price": 0,
+            "location": {
+                "room": 123,
+                "bookcase": 123,
+                "shelf": 123,
+                "cuvette": 123,
+                "column": 123,
+                "row": 123,
+            },
+            "some_additional_field": "qwe",
+        },
+    )
+
+    assert response.status_code == 422
+    assert all(
+        [
+            _ in response.json.get("errors").get("json").keys()
+            for _ in expected_detected_wrong_fields
+        ]
+    )
+
+
+def test_post_request_validation_part_schema_missing_fields(app, client):
+    expected_detected_wrong_fields = [
+        "category",
+        "description",
+        "location",
+        "name",
+        "serial_number",
+    ]
+
+    response = client.post(
+        url_for("api.Parts"),
+        json={},
+    )
+
+    assert response.status_code == 422
+    assert all(
+        [
+            _ in response.json.get("errors").get("json").keys()
+            for _ in expected_detected_wrong_fields
+        ]
+    )
+
+
+def test_post_request_validation_part_schema_serial_number_already_used(app, client):
+    for _ in range(2):
+        response = client.post(
+            url_for("api.Parts"),
+            json={
+                "serial_number": "s0m3-numb3r",
+                "name": "Very good pc",
+                "description": "Top quality pc with great components for gaming.",
+                "category": SUBCATEGORY_NAME,
+                "quantity": 1,
+                "price": 7499,
+                "location": {
+                    "room": "15",
+                    "bookcase": "21",
+                    "shelf": "2",
+                    "cuvette": "2",
+                    "column": "1",
+                    "row": "1",
+                },
+            },
+        )
+
+    assert response.status_code == 422
+    assert "serial_number" in response.json.get("errors").get("json").keys()
+
+
+def test_post_request_validation_part_schema_category_does_not_exist(app, client):
+    response = client.post(
+        url_for("api.Parts"),
+        json={
+            "serial_number": "s0m3-numb3r",
+            "name": "Very good pc",
+            "description": "Top quality pc with great components for gaming.",
+            "category": "wqeqwe",
+            "quantity": 1,
+            "price": 7499,
+            "location": {
+                "room": "15",
+                "bookcase": "21",
+                "shelf": "2",
+                "cuvette": "2",
+                "column": "1",
+                "row": "1",
+            },
+        },
+    )
+
+    assert response.status_code == 422
+    assert "category" in response.json.get("errors").get("json").keys()
+
+
+def test_post_request_validation_category_schema_category_name_already_used(
+    app, client
+):
+    for _ in range(2):
+        response = client.post(
+            url_for("api.Categories"),
+            json={"name": "somename", "parent_name": BASE_CATEGORY_NAME},
+        )
+
+    assert response.status_code == 422
+    assert "name" in response.json.get("errors").get("json").keys()

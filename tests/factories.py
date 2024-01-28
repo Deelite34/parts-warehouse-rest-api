@@ -33,7 +33,10 @@ def make_part(category_name=SUBCATEGORY_NAME, count=1):
 
     category = Category.objects.get(name=category_name)
     if not category:
-        category = Category(name=category_name, parent_name=BASE_CATEGORY_NAME)
+        category = Category(
+            name=category_name + str(random.uniform(1, 10000000)),
+            parent_name=BASE_CATEGORY_NAME,
+        )
 
     parts_to_be_created = []
 
