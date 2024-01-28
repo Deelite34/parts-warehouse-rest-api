@@ -2,7 +2,6 @@ import click
 
 from flask.cli import with_appcontext
 import pytest
-from api.models import Category, Part
 from utils import generate_sample_data
 
 

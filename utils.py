@@ -33,7 +33,8 @@ def generate_sample_data(
 
     for _ in range(num_of_categories):
         category = Category(
-            name=fake.word() + str(random.uniform(1, 10000000)), parent_name="base"
+            name=fake.word() + str(random.uniform(1, 10000000)),
+            parent_name=base_category_name,
         )
         categories_to_be_created.append(category)
 
