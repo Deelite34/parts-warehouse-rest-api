@@ -39,15 +39,17 @@ def create_app(testing=False):
     add_commands(flask_app)
 
     db = flask_app.config["MONGODB_DB_NAME"]
-    host = flask_app.config["MONGODB_HOST"]
-
-    me.connect(db=db, host=host)
-
     if config is not ProdConfig:
+        host = flask_app.config["MONGODB_HOST"]
+        me.connect(db=db, host=host)
+
         mode = flask_app.config["MODE"]
         flask_app.logger.debug(
             f"Connected to local {mode} {flask_app.config['MONGODB_DB_NAME']} Mongo database."
         )
     else:
+        host = flask_app.config["CONNECTION_STRING"]
+        me.connect(db=db, host=host)
+
         flask_app.logger.debug("Connected to production database.")
     return flask_app
