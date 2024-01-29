@@ -19,7 +19,8 @@ def detailed_abort(code, details: str | Exception) -> None:
 
 def generate_sample_data(
     num_of_categories=3, num_of_parts=6, base_category_name="base"
-):
+) -> None:
+    """Creates parts and categories in current database"""
     from api.models import Category, Part
 
     categories_to_be_created = []

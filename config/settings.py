@@ -30,9 +30,8 @@ class BaseConfig:
 
 
 class ProdConfig(BaseConfig):
-    SECRET_KEY = os.getenv("secret_key")
     MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME")
-    # TODO CONNECTION_STRING = f"mongodb+srv://{os.getenv("MONGODB_USERNAME")}:{os.getenv("MONGODB_PASSWORD")}@{os.getenv("MONGODB_CLUSTER")}"
+    CONNECTION_STRING = f"mongodb+srv://{os.getenv("PROD_MONGODB_USERNAME")}:{os.getenv("PROD_MONGODB_PASSWORD")}@{os.getenv("PROD_MONGODB_CLUSTER")}"
 
 
 class DevConfig(BaseConfig):

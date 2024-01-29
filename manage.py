@@ -8,7 +8,7 @@ from utils import generate_sample_data
 @click.command("generate_data")
 @with_appcontext
 def create_data():
-    """Generate set of data consisting of 1 base category, 3 subcategories and 6 parts using them"""
+    """Generate set of data consisting of base category, 3 subcategories and 6 parts using them"""
     generate_sample_data(num_of_categories=3, num_of_parts=6)
 
 
@@ -16,6 +16,7 @@ def create_data():
 @click.argument("which", nargs=-1, required=False)
 @with_appcontext
 def run_pytest(which="tests"):
+    """If no argument is supplied, runs tests. Argument specifies which specific test(tests) to run."""
     which = " ".join(which)
     if len(which) == 0:
         pytest.main(["-s"])

@@ -19,3 +19,6 @@ msh:
 
 test: # Example: make ARGS=tests/test_routes.py::test_connection_to_test_db test
 	docker compose exec flask flask test $(ARGS)
+
+generate_data:
+	docker compose exec flask flask generate_data
