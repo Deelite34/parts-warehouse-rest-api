@@ -3,15 +3,15 @@ from api.models import Category, Part
 from marshmallow.validate import Range
 
 
-class KeepUnknownsSchema(Schema):
+class KeepUnknowns:
     class Meta:
-        # This keeps unknown fields through schema.load(), but not schema.dump()
+        # Workaround that keeps unknown fields through validations schema.load()
         unknown = INCLUDE
 
     @post_dump(pass_original=True)
     def keep_unknowns(self, output, orig, **kwargs):
         """
-        Workaround that will allow us to keep unknown values through schema.dump()
+        Workaround that keeps unknown fields through validations schema.dump()
         https://github.com/marshmallow-code/marshmallow/issues/1545#issuecomment-1051943440
         """
         for key in orig:
@@ -20,7 +20,7 @@ class KeepUnknownsSchema(Schema):
         return output
 
 
-class NestedLocationSchema(KeepUnknownsSchema):
+class NestedLocationSchema(Schema):
     room = fields.String(required=True, allow_blank=True)
     bookcase = fields.String(required=True, allow_blank=True)
     shelf = fields.String(required=True, allow_blank=True)
@@ -29,7 +29,7 @@ class NestedLocationSchema(KeepUnknownsSchema):
     row = fields.String(required=True, allow_blank=True)
 
 
-class PartSchema(KeepUnknownsSchema):
+class PartSchema(KeepUnknowns, Schema):
     serial_number = fields.String(required=True, unique=True)
     name = fields.String(required=True)
     description = fields.String(required=True)
@@ -66,7 +66,7 @@ class PartSchema(KeepUnknownsSchema):
             )
 
 
-class PartSearchSchema(KeepUnknownsSchema):
+class PartSearchSchema(KeepUnknowns, Schema):
     id = fields.String()
     serial_number = fields.String()
     name = fields.String()
@@ -87,7 +87,7 @@ class PartSearchSchema(KeepUnknownsSchema):
     row = fields.String()
 
 
-class CategorySchema(KeepUnknownsSchema):
+class CategorySchema(KeepUnknowns, Schema):
     name = fields.String(required=True, unique=True)
     parent_name = fields.String(required=True, allow_blank=True)
 

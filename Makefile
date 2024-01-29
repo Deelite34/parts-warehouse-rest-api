@@ -17,5 +17,5 @@ mbash:
 msh:
 	docker compose exec mongodb mongosh
 
-test:
-	docker compose exec flask flask test
+test: # Example: make ARGS=tests/test_routes.py::test_connection_to_test_db test
+	docker compose exec flask flask test $(ARGS)

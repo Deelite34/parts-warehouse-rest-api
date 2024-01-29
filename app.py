@@ -38,9 +38,11 @@ def create_app(testing=False):
     register_blueprints(flask_app)
     add_commands(flask_app)
 
-    me.connect(
-        db=flask_app.config["MONGODB_DB_NAME"], host=flask_app.config["MONGODB_HOST"]
-    )
+    db = flask_app.config["MONGODB_DB_NAME"]
+    host = flask_app.config["MONGODB_HOST"]
+
+    me.connect(db=db, host=host)
+
     if config is not ProdConfig:
         mode = flask_app.config["MODE"]
         flask_app.logger.debug(

@@ -37,7 +37,7 @@ class QuerySetCategoryExtended(QuerySetExtended):
             self_data_dict = json.loads(self.to_json())[0]
             if error_msg := self.check_any_parts_using_this_category(self_data_dict):
                 detailed_abort(409, error_msg)
-            if error_msg := self.check_child_category_for_parts_using_it(
+            if error_msg := self.check_child_categories_for_parts_using_it(
                 self_data_dict
             ):
                 detailed_abort(409, error_msg)
@@ -57,7 +57,7 @@ class QuerySetCategoryExtended(QuerySetExtended):
             return f"Deletion failed - there are parts using this category {name}"
         return None
 
-    def check_child_category_for_parts_using_it(self, data):
+    def check_child_categories_for_parts_using_it(self, data):
         """
         Returns string containing error message,
         if category has any child categories being used by any part,
@@ -81,7 +81,7 @@ class QuerySetCategoryExtended(QuerySetExtended):
                 return error_msg
             else:
                 # Check all children of this child category recursively, depth-first
-                if error_msg := self.check_child_category_for_parts_using_it(
+                if error_msg := self.check_child_categories_for_parts_using_it(
                     child_data
                 ):
                     return error_msg

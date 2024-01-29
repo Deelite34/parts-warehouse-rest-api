@@ -13,6 +13,11 @@ def create_data():
 
 
 @click.command("test")
+@click.argument("which", nargs=-1, required=False)
 @with_appcontext
-def run_pytest():
-    pytest.main(["-s", "tests"])
+def run_pytest(which="tests"):
+    which = " ".join(which)
+    if len(which) == 0:
+        pytest.main(["-s"])
+    else:
+        pytest.main(["-s", which])

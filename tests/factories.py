@@ -1,11 +1,14 @@
 import random
+from typing import List
 from api.models import Category, Part
 from tests.conftest import BASE_CATEGORY_NAME, SUBCATEGORY_NAME
 from utils import fake
 
 
-def make_category(count=1):
-    """Creates subcategories of base category."""
+def make_category(count=1) -> List[Category]:
+    """
+    Creates base category, and amount of subcategories defined by count argument
+    """
 
     categories_to_be_created = []
 
@@ -25,13 +28,13 @@ def make_category(count=1):
     return Category.objects.insert(categories_to_be_created)
 
 
-def make_part(category_name=SUBCATEGORY_NAME, count=1):
+def make_part(category_name=SUBCATEGORY_NAME, count=1) -> List[Part]:
     base_category = Category.objects.get_or_none(name=BASE_CATEGORY_NAME)
     if not base_category:
         base_category = Category(name=BASE_CATEGORY_NAME, parent_name="")
         base_category.save()
 
-    category = Category.objects.get(name=category_name)
+    category = Category.objects.get_or_none(name=category_name)
     if not category:
         category = Category(
             name=category_name + str(random.uniform(1, 10000000)),

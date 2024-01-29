@@ -1,11 +1,14 @@
 from flask import url_for
-import mongoengine
-from tests.conftest import BASE_CATEGORY_NAME, SUBCATEGORY_NAME
+from tests.conftest import BASE_CATEGORY_NAME
 from tests.factories import make_category, make_part
 
 
-def test_connection_to_test_db(app):
-    assert mongoengine.connection.get_db().name == "test"
+def test_connection_to_test_db(app, db):
+    test_db_is_used = db.name == "test"
+    if not test_db_is_used:
+        raise RuntimeError(
+            f"Test database seems to not be a database being used for tests. Detected database name={db.name}."
+        )
 
 
 def test_part_get_many(app, client):
@@ -24,26 +27,27 @@ def test_part_get_many(app, client):
 def test_part_get(app, client):
     make_category(count=1)
     parts = make_part(count=1)
-    part_id = parts[0].id
+    part = parts[0]
 
     response = client.get(
-        url_for("api.PartsById", part_id=part_id),
+        url_for("api.PartsById", part_id=part.id),
     )
 
     assert response.status_code == 200
-    assert response.json.get("category") == SUBCATEGORY_NAME
+    assert response.json.get("category") == part.category
 
 
 def test_part_create(app, client):
     serial_number = "s0m3-numb3r"
+    category = make_category()[1]
 
     response = client.post(
         url_for("api.Parts"),
         json={
-            "serial_number": "s0m3-numb3r",
+            "serial_number": serial_number,
             "name": "Very good pc",
             "description": "Top quality pc with great components for gaming.",
-            "category": SUBCATEGORY_NAME,
+            "category": category.name,
             "quantity": 1,
             "price": 7499,
             "location": {
@@ -62,7 +66,7 @@ def test_part_create(app, client):
 
 
 def test_part_update_part_exists(app, client):
-    make_category(count=1)
+    category = make_category(count=1)[1]
     parts = make_part(count=1)
     part_id = parts[0].id
 
@@ -72,7 +76,7 @@ def test_part_update_part_exists(app, client):
             "serial_number": "s0m3-numb3r123",
             "name": "Very good pc123",
             "description": "Top quality pc with great components for gaming.123",
-            "category": SUBCATEGORY_NAME,
+            "category": category.name,
             "quantity": 1123,
             "price": 7499,
             "location": {
@@ -91,7 +95,7 @@ def test_part_update_part_exists(app, client):
 
 
 def test_part_update_part_does_not_exist(app, client):
-    make_category(count=1)
+    category = make_category(count=1)[1]
     part_id = "1" * 24
 
     response = client.put(
@@ -100,7 +104,7 @@ def test_part_update_part_does_not_exist(app, client):
             "serial_number": "s0m3-numb3r123",
             "name": "Very good pc123",
             "description": "Top quality pc with great components for gaming.123",
-            "category": SUBCATEGORY_NAME,
+            "category": category.name,
             "quantity": 1123,
             "price": 7499,
             "location": {
@@ -151,8 +155,8 @@ def test_category_get_many(app, client):
 
     assert response.status_code == 200
     assert (
-        len(response.json) == 5
-    )  # 3 categories we created + 2 created in fixture on setup
+        len(response.json) == 4
+    )  # 1 base category + 3 subcategories that were created
     assert all([isinstance(i, dict) for i in response.json])
 
 
@@ -268,6 +272,8 @@ def test_post_request_validation_part_schema_missing_fields(app, client):
 
 
 def test_post_request_validation_part_schema_serial_number_already_used(app, client):
+    category = make_category()[1]
+
     for _ in range(2):
         response = client.post(
             url_for("api.Parts"),
@@ -275,7 +281,7 @@ def test_post_request_validation_part_schema_serial_number_already_used(app, cli
                 "serial_number": "s0m3-numb3r",
                 "name": "Very good pc",
                 "description": "Top quality pc with great components for gaming.",
-                "category": SUBCATEGORY_NAME,
+                "category": category.name,
                 "quantity": 1,
                 "price": 7499,
                 "location": {
