@@ -15,7 +15,7 @@ There are some assumptions I made while developing the project
 - Why flask? - My alternative option for his project was Django. Django is batteries included framework,
   that would be great choice, if I needed the required batteries. Django ORM does not support MongoDB,
   I had no need for admin panel. Instead of stripping house called django, it was easier for me to build up from scratch a 
-  flask app from scratch where I would get api framework, serialization/deserialization and orm/mongodb libraries better suited for my needs of this project.
+  flask app where I would choose api framework, serialization/deserialization and orm/mongodb libraries better suited for my needs of this project.
   Besides that, I have been learning flask for a while, and it was a good chance to experiment with new libraries.
 
 - MongoDB collections don't have enforced structure unlike in relational DBs
