@@ -1,4 +1,5 @@
 from flask import url_for
+from api.models import Category
 from tests.conftest import BASE_CATEGORY_NAME
 from tests.factories import make_category, make_part
 
@@ -207,6 +208,89 @@ def test_category_delete(app, client):
     )
 
     assert response.status_code == 204
+
+
+def test_category_delete_category_chain_is_not_base_category(app, client):
+    """
+    Tests possible options for deletion in readjust_subcategories_parent queryset function,
+    where category to delete is not a base category.
+    """
+    direct_child_name = "direct_child_A"
+    # Create tree of categories: base_category--direct_child_A--indirect_child_B
+    #                                                        |__indirect_child_C
+    client.post(
+        url_for("api.Categories"),
+        json={"name": "base_category", "parent_name": ""},
+    )
+    client.post(
+        url_for("api.Categories"),
+        json={"name": direct_child_name, "parent_name": "base_category"},
+    )
+    client.post(
+        url_for("api.Categories"),
+        json={"name": "indirect_child_B", "parent_name": direct_child_name},
+    )
+    client.post(
+        url_for("api.Categories"),
+        json={"name": "indirect_child_C", "parent_name": direct_child_name},
+    )
+
+    direct_child_id = Category.objects(name=direct_child_name).first().id
+    delete_response = client.delete(
+        url_for("api.CategoriesById", category_id=direct_child_id),
+    )
+    remaining_categories = client.get(
+        url_for("api.Categories"),
+    )
+
+    remaining_categories_names = [
+        category.get("name") for category in remaining_categories.json
+    ]
+    remaining_categories_parent_names = [
+        category.get("parent_name") for category in remaining_categories.json
+    ]
+
+    assert delete_response.status_code == 204
+    assert direct_child_name not in remaining_categories_names
+    assert direct_child_name not in remaining_categories_parent_names
+    assert len(remaining_categories.json) == 3
+
+
+def test_category_delete_category_chain_is_base_category(app, client):
+    """
+    Tests possible options for deletion in readjust_subcategories_parent queryset function,
+    where category to delete is base category.
+    """
+    base_category_name = "base_category"
+    # Create tree of categories: base_category--direct_child_A--indirect_child_B
+    #                                                        |__indirect_child_C
+    client.post(
+        url_for("api.Categories"),
+        json={"name": base_category_name, "parent_name": ""},
+    )
+    client.post(
+        url_for("api.Categories"),
+        json={"name": "direct_child_A", "parent_name": base_category_name},
+    )
+    client.post(
+        url_for("api.Categories"),
+        json={"name": "indirect_child_B", "parent_name": "direct_child_A"},
+    )
+    client.post(
+        url_for("api.Categories"),
+        json={"name": "indirect_child_C", "parent_name": "direct_child_A"},
+    )
+
+    base_category_id = Category.objects(name=base_category_name).first().id
+    delete_response = client.delete(
+        url_for("api.CategoriesById", category_id=base_category_id),
+    )
+    remaining_categories = client.get(
+        url_for("api.Categories"),
+    )
+
+    assert delete_response.status_code == 204
+    assert len(remaining_categories.json) == 0
 
 
 def test_post_request_validation_part_schema_bad_fields(app, client):
