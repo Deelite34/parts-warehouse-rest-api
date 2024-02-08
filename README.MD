@@ -25,7 +25,7 @@ There are some assumptions I made while developing the project
 
 - Location parameters are assumed to described by numbers - Xth row, Yth shelf, Zth room etc.
 
-- Settings allow use of local databases "test" database is used for tests, separate db for development use and remote theoretical production database.
+- Settings allow use of local databases "test" database for tests, separate db for development use and remote theoretical production database.
 
 - "Production" settings use connection to remote database 
 
