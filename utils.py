@@ -35,7 +35,7 @@ def generate_sample_data(
 
     for _ in range(num_of_categories):
         category = Category(
-            name=fake.word() + str(random.uniform(1, 10000000)),
+            name=f"{fake.word()}-{str(random.randrange(1, 1000))}",
             parent_name=base_category_name,
         )
         categories_to_be_created.append(category)
@@ -46,9 +46,9 @@ def generate_sample_data(
             name=fake.ecommerce_name(),
             description=fake.paragraph(nb_sentences=2),
             category=categories_to_be_created[
-                fake.random_digit() % len(categories_to_be_created)
-            ].name,  # Assigned to random category created above
-            quantity=random.randrange(300),
+                random.randrange(1, len(categories_to_be_created))
+            ].name,  # Assign to random but not base category
+            quantity=random.randrange(1, 300),
             price=round(random.uniform(1, 10000), 2),
             location={
                 "room": random.randrange(1, 30),
